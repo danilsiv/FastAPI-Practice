@@ -1,0 +1,14 @@
+# Python bytecode and cache
+*.pyc
+__pycache__/
+
+# Virtual environment folders
+.env
+.venv
+env/
+venv/
+
+# PyCharm project settings
+.idea/
+
+online_cinema.db
