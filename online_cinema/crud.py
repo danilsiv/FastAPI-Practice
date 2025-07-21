@@ -1,7 +1,9 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from online_cinema.models import Film
-from online_cinema.schemas import FilmCreate, FilmUpdate
+
+from online_cinema.models import Film, User
+from online_cinema.schemas import FilmCreate, FilmUpdate, UserCreate
+from online_cinema.security import hash_password
 
 
 async def create_film(db: AsyncSession, film: FilmCreate):
@@ -48,3 +50,18 @@ async def delete_film(db: AsyncSession, film_id: int):
     await db.delete(db_film)
     await db.commit()
     return db_film
+
+
+async def create_user(db: AsyncSession, user: UserCreate):
+    hashed = hash_password(user.password)
+    db_user = User(email=user.email, hashed_password=hashed)
+    db.add(db_user)
+    await db.commit()
+    await db.refresh(db_user)
+    return db_user
+
+
+async def get_user_by_email(db: AsyncSession, email: str):
+    result = await db.execute(select(User).where(User.email == email))
+    user = result.scalar_one_or_none()
+    return user
