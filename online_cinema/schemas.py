@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Optional
 
 
 class FilmBase(BaseModel):
@@ -8,6 +9,10 @@ class FilmBase(BaseModel):
 
 
 class FilmCreate(FilmBase):
+    pass
+
+
+class FilmUpdate(FilmBase):
     pass
 
 
