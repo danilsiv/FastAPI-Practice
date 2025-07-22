@@ -9,11 +9,32 @@ from starlette.exceptions import HTTPException
 from online_cinema.crud import get_user_by_email, create_user
 from online_cinema.database import get_db
 from online_cinema.schemas import UserRead, UserCreate, Token
-from online_cinema.security import verify_password, ACCESS_TOKEN_EXPIRE_MINUTES, create_access_token
+from online_cinema.security import (
+    verify_password,
+    ACCESS_TOKEN_EXPIRE_MINUTES,
+    create_access_token,
+    decode_token
+)
 
 router = APIRouter()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+
+
+async def get_current_user(
+        token: str = Depends(oauth2_scheme),
+        db: AsyncSession = Depends(get_db)
+) -> UserRead:
+    payload = decode_token(token)
+    if payload is None:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    email = payload.get("sub")
+    if email is None:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    db_user = await get_user_by_email(db, email)
+    if not db_user:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    return UserRead.from_orm(db_user)
 
 
 @router.post("/register/", response_model=UserRead)
