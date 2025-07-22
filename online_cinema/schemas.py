@@ -23,30 +23,17 @@ class FilmRead(FilmBase):
 
 
 class UserBase(BaseModel):
-    email: str
-
-
-class UserCreate(UserBase):
-    password: str
-
-
-class UserRead(UserBase):
-    id: int
-
-    class Config:
-        from_attributes = True
-
-
-class UserBase(BaseModel):
     email: EmailStr
 
 
 class UserCreate(UserBase):
     password: str
+    role: str = "user"
 
 
 class UserRead(UserBase):
     id: int
+    role: str
 
     class Config:
         from_attributes = True

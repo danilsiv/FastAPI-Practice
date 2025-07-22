@@ -54,7 +54,7 @@ async def delete_film(db: AsyncSession, film_id: int):
 
 async def create_user(db: AsyncSession, user: UserCreate):
     hashed = hash_password(user.password)
-    db_user = User(email=user.email, hashed_password=hashed)
+    db_user = User(email=user.email, hashed_password=hashed, role=user.role)
     db.add(db_user)
     await db.commit()
     await db.refresh(db_user)
